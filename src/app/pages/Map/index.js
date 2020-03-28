@@ -1,40 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Map, InfoWindow, Marker, GoogleApiWrapper} from "google-maps-react";
 
 import Logo from '../../../Logo';
 
 import { Container, Header, Title, AddButton } from './styles';
 import { FaPlus } from 'react-icons/fa';
+import GoogleMap from '../../components/GoogleMap';
 
-export function MapPage ({ loaded, google }) {
-  let [ activeMarker, setActiveMarker ] = useState({});
-  let [ selectedPlace, setSelectedPlace ] = useState({});
-  let [ showingInfoWindow, ] = useState(false);
+export default function MapPage () {
+  let [ map, setMap ] = useState(null);
   let [ position, setPosition ] = useState({lat: -22.915, lng: -43.197});
 
   useEffect(() => {
-    setInterval(() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => setPosition({lat: position.coords.latitude, lng: position.coords.longitude}), () => alert('Falha ao buscar posição geográfica'));
-      } else {
-        alert('Seu navegador não suporta geolocalização');
+    if (navigator.geolocation) {
+      if (map) {
+          navigator.geolocation.getCurrentPosition(position => {
+            setPosition({lat: position.coords.latitude, lng: position.coords.longitude});
+            map.setCenter({lat: position.coords.latitude, lng: position.coords.longitude});
+          }, () => alert('Falha ao buscar posição geográfica'));
+        setInterval(() => {
+          navigator.geolocation.getCurrentPosition(position => {
+            setPosition({lat: position.coords.latitude, lng: position.coords.longitude});
+            map.panTo({lat: position.coords.latitude, lng: position.coords.longitude});
+          }, () => alert('Falha ao buscar posição geográfica'));
+        }, 2000);
       }
-    }, 5000);
-  }, [])
+    } else {
+      alert('Seu navegador não suporta geolocalização');
+    }
+  }, [map])
 
-  function onMarkerClick(props, marker) {
-    setActiveMarker(marker);
-    setSelectedPlace(props);
-    showingInfoWindow(true);
+  function handleMapLoad({ map }) {
+    if (map) {
+      setMap(map);
+    }
   }
-
-  function onInfoWindowClose() {
-    setActiveMarker(null);
-    showingInfoWindow(false);
-  }
-
-  
-  if (!loaded && position) return <div>Loading...</div>;
 
   return (
     <Container>
@@ -42,43 +41,10 @@ export function MapPage ({ loaded, google }) {
         <Logo></Logo>
         <Title>Lost Messages</Title>
       </Header>
-      <Map
-        className="map"
-        google={google}
-        style={{ height: '100%', position: 'relative', width: '100%' }}
-        zoom={14}
-        disableDefaultUI={true}
-        center={position}>
-        <Marker
-          name="SOMA"
-          onClick={onMarkerClick}
-          position={{ lat: 37.778519, lng: -122.40564 }}
-        />
-
-        <Marker
-          name="Dolores park"
-          onClick={onMarkerClick}
-          position={{ lat: 37.759703, lng: -122.428093 }}
-        />
-
-        <Marker name="Current location" onClick={onMarkerClick} />
-
-        <InfoWindow
-          marker={activeMarker}
-          onClose={onInfoWindowClose}
-          visible={showingInfoWindow}>
-          <div>
-            <h1>{selectedPlace.name}</h1>
-          </div>
-        </InfoWindow>
-      </Map>
+      <GoogleMap onLoad={handleMapLoad}/>
       <AddButton>
         <FaPlus />
       </AddButton>
     </Container>
   );
 }
-
-export default GoogleApiWrapper({
-  apiKey: ('AIzaSyAHUx_sdvuB6wLKXt1s54eLMeXEzIOTIyo')
-})(MapPage)

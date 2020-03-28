@@ -4,12 +4,14 @@ import { darken } from "polished";
 export const Container = styled.div`
   color: #fff;
   font-family: 'Quattrocento Sans', cursive;
-  /* display: flex;
-  flex-direction: column; */
+  display: flex;
+  flex-direction: column;
 
-  .map {
-    top: 0px;
+  #map {
+    position: absolute;
     z-index: -1;
+    width: 100%;
+    height: 100%;
   }
 `;
 
