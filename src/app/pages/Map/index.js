@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper} from "google-maps-react";
 
 import Logo from '../../../Logo';
@@ -6,85 +6,77 @@ import Logo from '../../../Logo';
 import { Container, Header, Title, AddButton } from './styles';
 import { FaPlus } from 'react-icons/fa';
 
-export class MapPage extends Component {
-  state = {
-    activeMarker: {},
-    selectedPlace: {},
-    showingInfoWindow: false
-  };
+export function MapPage ({ loaded, google }) {
+  let [ activeMarker, setActiveMarker ] = useState({});
+  let [ selectedPlace, setSelectedPlace ] = useState({});
+  let [ showingInfoWindow, ] = useState(false);
+  let [ position, setPosition ] = useState({lat: -22.915, lng: -43.197});
 
-  onMarkerClick = (props, marker) =>
-    this.setState({
-      activeMarker: marker,
-      selectedPlace: props,
-      showingInfoWindow: true
-    });
+  useEffect(() => {
+    setInterval(() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => setPosition({lat: position.coords.latitude, lng: position.coords.longitude}), () => alert('Falha ao buscar posição geográfica'));
+      } else {
+        alert('Seu navegador não suporta geolocalização');
+      }
+    }, 5000);
+  }, [])
 
-  onInfoWindowClose = () =>
-    this.setState({
-      activeMarker: null,
-      showingInfoWindow: false
-    });
-
-  onMapClicked = () => {
-    if (this.state.showingInfoWindow)
-      this.setState({
-        activeMarker: null,
-        showingInfoWindow: false
-      });
-  };
-
-  render() {
-    if (!this.props.loaded) return <div>Loading...</div>;
-
-    return (
-      <Container>
-        <Header>
-          <Logo></Logo>
-          <Title>Lost Messages</Title>
-        </Header>
-        <Map
-          className="map"
-          google={this.props.google}
-          onClick={this.onMapClicked}
-          style={{ height: '100%', position: 'relative', width: '100%' }}
-          zoom={14}
-          disableDefaultUI={true}>
-          <Marker
-            name="SOMA"
-            onClick={this.onMarkerClick}
-            position={{ lat: 37.778519, lng: -122.40564 }}
-          />
-
-          <Marker
-            name="Dolores park"
-            onClick={this.onMarkerClick}
-            position={{ lat: 37.759703, lng: -122.428093 }}
-          />
-
-          <Marker name="Current location" onClick={this.onMarkerClick} />
-
-          <InfoWindow
-            marker={this.state.activeMarker}
-            onClose={this.onInfoWindowClose}
-            visible={this.state.showingInfoWindow}>
-            <div>
-              <h1>{this.state.selectedPlace.name}</h1>
-            </div>
-          </InfoWindow>
-
-          <InfoWindow position={{ lat: 37.765703, lng: -122.42564 }} visible>
-            <small>
-              Click on any of the markers to display an additional info.
-            </small>
-          </InfoWindow>
-        </Map>
-        <AddButton>
-          <FaPlus />
-        </AddButton>
-      </Container>
-    );
+  function onMarkerClick(props, marker) {
+    setActiveMarker(marker);
+    setSelectedPlace(props);
+    showingInfoWindow(true);
   }
+
+  function onInfoWindowClose() {
+    setActiveMarker(null);
+    showingInfoWindow(false);
+  }
+
+  
+  if (!loaded && position) return <div>Loading...</div>;
+
+  return (
+    <Container>
+      <Header>
+        <Logo></Logo>
+        <Title>Lost Messages</Title>
+      </Header>
+      <Map
+        className="map"
+        google={google}
+        style={{ height: '100%', position: 'relative', width: '100%' }}
+        zoom={14}
+        disableDefaultUI={true}
+        center={position}>
+        <Marker
+          name="SOMA"
+          onClick={onMarkerClick}
+          position={{ lat: 37.778519, lng: -122.40564 }}
+        />
+
+        <Marker
+          name="Dolores park"
+          onClick={onMarkerClick}
+          position={{ lat: 37.759703, lng: -122.428093 }}
+        />
+
+        <Marker name="Current location" onClick={onMarkerClick} />
+
+        <InfoWindow
+          marker={activeMarker}
+          onClose={onInfoWindowClose}
+          visible={showingInfoWindow}>
+          <div>
+            <h1>{selectedPlace.name}</h1>
+          </div>
+        </InfoWindow>
+      </Map>
+      <AddButton>
+        <FaPlus />
+      </AddButton>
+    </Container>
+  );
 }
 
 export default GoogleApiWrapper({

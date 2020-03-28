@@ -23,6 +23,7 @@ export const Header = styled.header`
     fill: #fff;
     width: 50px;
     height: 50px;
+    margin-left: 10px;
   }
 `;
 
@@ -36,8 +37,8 @@ export const AddButton = styled.button`
   color: #fff;
   cursor: pointer;
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 20px;
+  right: 20px;
   width: 3.5rem;
   height: 3.5rem;
   border: none;
