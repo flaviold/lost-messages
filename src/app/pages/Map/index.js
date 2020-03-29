@@ -18,8 +18,8 @@ export default function Map () {
   useEffect(() => {
     if (map) {
       setNewPosition();
-      setFollowing(true);
-      setDraggable(false);
+      setFollowing(false);
+      setDraggable(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map]);

@@ -52,11 +52,11 @@ export const AudioContainer = styled.div`
 
 export const PlayButton = styled.div`
   font-size: 1.2rem;
-  color: #058ED9;
+  background: #058ED9;
+  color: #fff;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.30);
   margin-right: 5px;
   display:flex;
   align-items: center;
@@ -97,4 +97,5 @@ export const Exit = styled.button`
   right: 0;
   border: none;
   background: none;
+  cursor: pointer;
 `;
