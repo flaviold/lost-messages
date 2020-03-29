@@ -2,37 +2,65 @@ import React, { useState, useEffect } from 'react';
 
 import Logo from '../../../Logo';
 
-import { Container, Header, Title, AddButton } from './styles';
-import { FaPlus } from 'react-icons/fa';
-import GoogleMap from '../../components/GoogleMap';
+import { Container, Header, Title, AddButton, CurrentPositionButton } from './styles';
+import { FaMicrophone, FaCompass } from 'react-icons/fa';
+import { GoogleMap, Marker } from '../../components/GoogleMap';
+import { getCurrentLocation } from '../../services/location';
+import AudioPlayer from '../../components/AudioPlayer';
 
-export default function MapPage () {
-  let [ map, setMap ] = useState(null);
-  let [ position, setPosition ] = useState({lat: -22.915, lng: -43.197});
+export default function Map () {
+  const [ map, setMap ] = useState(null);
+  const [ positionInterval, setPositionInterval ] = useState(null);
+  const [ following, setFollowing ] = useState(false);
+  const [ draggable, setDraggable ] = useState(false);
+  const [ currentMarker, setCurrentMarker ] = useState(null);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      if (map) {
-          navigator.geolocation.getCurrentPosition(position => {
-            setPosition({lat: position.coords.latitude, lng: position.coords.longitude});
-            map.setCenter({lat: position.coords.latitude, lng: position.coords.longitude});
-          }, () => alert('Falha ao buscar posição geográfica'));
-        setInterval(() => {
-          navigator.geolocation.getCurrentPosition(position => {
-            setPosition({lat: position.coords.latitude, lng: position.coords.longitude});
-            map.panTo({lat: position.coords.latitude, lng: position.coords.longitude});
-          }, () => alert('Falha ao buscar posição geográfica'));
-        }, 2000);
-      }
-    } else {
-      alert('Seu navegador não suporta geolocalização');
+    if (map) {
+      setNewPosition();
+      setFollowing(true);
+      setDraggable(false);
     }
-  }, [map])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  useEffect(() => {
+    if (following) {
+      setNewPosition();
+      setPositionInterval(setInterval(setNewPosition, 1000));
+    } else {
+      clearInterval(positionInterval);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [following]);
+
+  async function setNewPosition() {
+    if (map) {
+      let newPosition = await getCurrentLocation();
+      map.panTo({lat: newPosition.lat, lng: newPosition.lng});
+    }
+  }
 
   function handleMapLoad({ map }) {
-    if (map) {
-      setMap(map);
-    }
+    setMap(map);
+  }
+
+  function handleMarkerClick(marker, map) {
+    if (currentMarker) return;
+    setFollowing(false);
+    setDraggable(false);
+    map.panTo(marker.getPosition())
+    setCurrentMarker(marker);
+  }
+
+  function handleCurrentPositionClick() {
+    setDraggable(following);
+    setFollowing(!following);
+  }
+
+  function handlePlayerExit() {
+    setCurrentMarker(null);
+    setDraggable(true);
   }
 
   return (
@@ -41,10 +69,25 @@ export default function MapPage () {
         <Logo></Logo>
         <Title>Lost Messages</Title>
       </Header>
-      <GoogleMap onLoad={handleMapLoad}/>
+      <GoogleMap 
+        onLoad={handleMapLoad}
+        draggable={draggable}
+      >
+        <Marker 
+          options={{
+            position: {lat: -19.5295366, lng: -40.666247}
+          }}
+          onClick={handleMarkerClick}
+        />
+        <Marker/>
+      </GoogleMap>
+      <CurrentPositionButton active={following} onClick={handleCurrentPositionClick}>
+        <FaCompass />
+      </CurrentPositionButton>
       <AddButton>
-        <FaPlus />
+        <FaMicrophone />
       </AddButton>
+      { currentMarker && <AudioPlayer onExit={handlePlayerExit} />}
     </Container>
   );
 }

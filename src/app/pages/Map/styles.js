@@ -34,22 +34,55 @@ export const Title = styled.h1`
 `;
 
 export const AddButton = styled.button`
-  font-size: 2.2rem;
-  background: #058ED9;
-  color: #fff;
+  font-size: 2rem;
+  background: #eee;
+  color: #333;
   cursor: pointer;
   position: absolute;
   bottom: 20px;
   right: 20px;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 50%;
   display:flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.75);
 
   &:hover {
-    background: ${darken(.05, '#058ED9')}
+    color: ${darken(.05, '#333')}
+  }
+  &:focus, &:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: white !important;
+  }
+`;
+
+export const CurrentPositionButton = styled.button`
+  font-size: 2rem;
+  background: #eee;
+  color: ${props => props.active ? '#058ED9' : '#333'};
+  cursor: pointer;
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.75);
+
+  &:hover {
+    color: ${props => darken(.05, `${props.active ? '#058ED9' : '#333'}`)}
+  }
+  &:focus, &:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: white !important;
   }
 `;
