@@ -15,27 +15,9 @@ export const Container = styled.div`
   }
 `;
 
-export const Header = styled.header`
-  background: #058ED9;
-  height: 50px;
-  display: flex;
-  align-items: center;
-
-  &>svg {
-    fill: #fff;
-    width: 50px;
-    height: 50px;
-    margin-left: 10px;
-  }
-`;
-
-export const Title = styled.h1`
-  margin: 0 auto;
-`;
-
-export const AddButton = styled.button`
+export const RecordButton = styled.button`
   font-size: 2rem;
-  background: #eee;
+  background: #fff;
   color: #333;
   cursor: pointer;
   position: absolute;
@@ -56,13 +38,13 @@ export const AddButton = styled.button`
   &:focus, &:active {
     outline: none !important;
     box-shadow: none !important;
-    background-color: white !important;
+    background-color: #fff !important;
   }
 `;
 
 export const CurrentPositionButton = styled.button`
   font-size: 2rem;
-  background: #eee;
+  background: #fff;
   color: ${props => props.active ? '#058ED9' : '#333'};
   cursor: pointer;
   position: absolute;
@@ -83,6 +65,6 @@ export const CurrentPositionButton = styled.button`
   &:focus, &:active {
     outline: none !important;
     box-shadow: none !important;
-    background-color: white !important;
+    background-color: #fff !important;
   }
 `;

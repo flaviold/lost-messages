@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import Logo from '../../../Logo';
-
-import { Container, Header, Title, AddButton, CurrentPositionButton } from './styles';
+import { Container, RecordButton, CurrentPositionButton } from './styles';
 import { FaMicrophone, FaCompass } from 'react-icons/fa';
 import { GoogleMap, Marker } from '../../components/GoogleMap';
 import { getCurrentLocation } from '../../services/location';
@@ -63,12 +61,14 @@ export default function Map () {
     setDraggable(true);
   }
 
+  function handleRecording() {
+    console.log('button clicked');
+    navigator.mediaDevices.getUserMedia({ audio: true})
+    
+  }
+
   return (
     <Container>
-      <Header>
-        <Logo></Logo>
-        <Title>Lost Messages</Title>
-      </Header>
       <GoogleMap 
         onLoad={handleMapLoad}
         draggable={draggable}
@@ -81,12 +81,13 @@ export default function Map () {
         />
         <Marker/>
       </GoogleMap>
-      <CurrentPositionButton active={following} onClick={handleCurrentPositionClick}>
+      <RecordButton onclick={handleRecording}>
+        <FaMicrophone />
+      </RecordButton>
+      <CurrentPositionButton active={following} onClick={handleRecording}>
         <FaCompass />
       </CurrentPositionButton>
-      <AddButton>
-        <FaMicrophone />
-      </AddButton>
+      <input type="file" accept="audio/*" capture="microphone" id="recorder"></input>
       { currentMarker && <AudioPlayer onExit={handlePlayerExit} />}
     </Container>
   );
